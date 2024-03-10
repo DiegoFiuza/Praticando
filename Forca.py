@@ -20,7 +20,7 @@ while True:
             print('_', end='')
     print('\n')
     ganhou = True
-    tentativa = input('Digite uma letra: ')
+    tentativa = input('Digite uma letra:  ')
     #A letra digitada será adicionada na lista
     letra_usuário.append(tentativa.lower())
 #Se a letra digitada não estiver na palavra, irá diminuir a chance em 1
