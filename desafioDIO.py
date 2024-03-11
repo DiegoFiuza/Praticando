@@ -20,29 +20,29 @@ numero_saque = 0
 LIMITE_SAQUE = 3
 
 while True:
-    opcao = input(menu)
+    opcao = input(menu).lower()
 
     if opcao =='d':
         print('Depósito: ')
         deposito = float(input('Digite o quanto deseja depositar: '))
         if deposito > 0:
             saldo += deposito
-            print(f'Você depositou {deposito} , seu saldo atual é de {saldo}')
-            extrato += f'Depósito de R$ {deposito} \n'
+            print(f'Você depositou {deposito:.2f} , seu saldo atual é de {saldo:.2f}')
+            extrato += f'Depósito de R$ {deposito:.2f}\n'
         else:
             print('Não é possível depositar valores abaixo ou iguais a ZERO')
     elif opcao =='s':
         print('Sacar: ')
         saque = float(input('Digite o valor do saque da sua conta: '))
         if saldo < saque:
-            print(f'Saldo insuficiente. Seu saldo atual é de {saldo}')
+            print(f'Saldo insuficiente. Seu saldo atual é de {saldo:.2f}')
         elif saque > 0 and saque <= 500:
             saldo -= saque
             if numero_saque == LIMITE_SAQUE:
                 print('Você atingiu o limite de saque diário... Operação inválida')
             else:
-                print(f'Você sacou {saque} e seu saldo atual é de {saldo}')
-                extrato += f'Saque de R$ {saque} \n'
+                print(f'Você sacou {saque:.2f} e seu saldo atual é de {saldo:.2f}')
+                extrato += f'Saque de R$ {saque:.2f}\n'
             numero_saque +=1
         elif saque > 500:
             print('Limite de saque é de R$ 500.00')
@@ -50,8 +50,11 @@ while True:
             print('Digite um valor válido')
             
     elif opcao == 'e':
+        print('\n*************** EXTRATO ***************\n')
         print(extrato)
-        print(f'Seu saldo atual é de {saldo}')
+        print('\n\n')
+        print(f'Seu saldo atual é de R$ {saldo:.2f}\n')
+        print('\n****************************************')
         if extrato == '':
             print('Você não realizou nenhuma operação hoje.')
     elif opcao == 'q':
