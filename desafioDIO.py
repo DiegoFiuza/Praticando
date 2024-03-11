@@ -51,6 +51,7 @@ while True:
             
     elif opcao == 'e':
         print(extrato)
+        print(f'Seu saldo atual é de {saldo}')
         if extrato == '':
             print('Você não realizou nenhuma operação hoje.')
     elif opcao == 'q':
