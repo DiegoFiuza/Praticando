@@ -44,6 +44,8 @@ while True:
                 print(f'Você sacou {saque} e seu saldo atual é de {saldo}')
                 extrato += f'Saque de R$ {saque} \n'
             numero_saque +=1
+        elif saque > 500:
+            print('Limite de saque é de R$ 500.00')
         else:
             print('Digite um valor válido')
             
