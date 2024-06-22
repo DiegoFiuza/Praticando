@@ -18,7 +18,7 @@ def new_user():
     while True:
         password = input('''
                         >>> Regras da criação de senha <<< 
-                            - Mínimo 10 caracteres
+                            - Possuir 10 caracteres
                             - Mínimo 1 letra maiúscula
                             - Mínimo 1 letra minúscula
                             - Mínimo 1 número
@@ -26,13 +26,16 @@ def new_user():
                      
                         >>> Crie sua senha <<< \n\n
                      ''')
-        if len(password) < 10 or re.search(r'\W',password):
-            print('Senha inválida! Digite novamente')
+        if len(password) < 10 or re.search(r'\W',password) or len(password) > 10:
+            if not password.isupper() or password.islower() or password.isalnum():
+                time.sleep(2)
+                print("Senha inválida! Digite novamente")
         else:
             break
     reg.setdefault('Senha', password)
     senha = reg['Senha']
     users_data.update(reg)
+    time.sleep(2)
     return homepage()
 
 #validar login
@@ -53,28 +56,32 @@ def login():
        
     password = input('Digite sua senha: \n\n')
     if username == usuario and password == senha:
-        time.sleep(5)
+        time.sleep(1)
         print('Login bem sucedido!!')
-        time.sleep(10)
-        print(f'Bem-Vindo {username}!!')
+        print('\n\n\n')
+        time.sleep(2)
+        print(f'Bem-Vindo {username.capitalize()}!!')
     elif username == usuario and password != senha:
         print('Senha incorreta')
         while password != senha:
-            return login(password(input('Digite novamente a sua senha: ')))
+            password = input('Digite Novamente a sua senha: ')
+        time.sleep(1)
+        print('Login bem sucedido!!')
+        print('\n\n\n')
+        time.sleep(2)
+        print(f'Bem-Vindo {username.capitalize()}!!')
+
 #página inicial
 def homepage():
     print('''
          >>>     WELCOME!!!     <<<
 ''')
-    time.sleep(5)
-    opcao = input("""
-             --- Digite login para entrar com usuário e senha --- \n\n
-             --- Digite sign in para criar cadastro --- \n\n:
-""")
-    opcao = opcao.lower()
-    if opcao == "login":
+    opcao = int(input("""
+             --- Digite 1 para realizar login --- \n\n
+             --- Digite 2 para sign up --- \n\n Digite: """))
+    if opcao == 1:
         login()
-    elif opcao == "sign in":
+    elif opcao == 2:
         new_user()
     else:
         print('Digite uma opção válida!!\n\n')
