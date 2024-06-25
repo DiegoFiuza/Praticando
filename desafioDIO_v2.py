@@ -12,96 +12,85 @@
 # extrato positional only e keyword only
 #função usuario(cliente): nome, data nasc, cpf e endereço(logradouro, nmro,bairro,cidade,sigla estado). Usuário cpf diferente
 #conta corrente em lista deve conter agencia, nmro conta e usuário(nmro da conta inicia em 1 e agencia fixo em 0001)
-import random
+from random import randint
 import sys
 
 extrato_1 = ""
 saldo = 0
-clientes = {}
-usuario = ''
-conta = ''
+clientes = []
 #login
 def login():
-    global usuario
     global clientes
-    opcao = int(input('\n\nVocê possui um cadastro? Sim [1]  |  Não[0]: '))
-    if opcao == 1:
-        user = input('Digite seu usuário: ')
-        if user == usuario:
-            print(f'Bem Vindo!!!\n\n  User: {user}')
-            menu()
+    while True:
+        opcao = int(input('\n\nVocê possui um cadastro? Sim [1]  |  Não[0]: '))
+        if opcao == 1:
+            nome = input('Digite seu usuário: ')
+            user_encontrado = filtro_cliente_2(nome,clientes)
+            if user_encontrado:
+                menu(user_encontrado)
+            else:
+                print('@@@ Usuário não encontrado! retornando ao início @@@')
+                return login()
+        elif opcao == 0:
+            print('Abrindo cadastro de cliente.')
+            cliente(clientes)
         else:
-            print('Você não possui cadastro, indo à novo cadastro de cliente.')
-            cliente()
-    elif opcao == 0:
-        print('Você não possui cadastro, indo à novo cadastro de cliente.')
-        cliente()
-    else:
-        print('Digite um caracter válido!! ')
-        return login()
+            print('Digite um caracter válido!! ')
+            return login()
 
+#verifica se cliente já está cadastrado
+def filtro_cliente(cpf,clientes):
+    usuario_filtrado = [usuario for usuario in clientes if usuario["CPF"] == cpf ]
+    return usuario_filtrado[0] if usuario_filtrado else None
 
-##consulta os clientes já criados
-def cadastros():
-    global clientes
-    print('Possui cadastro? [s | n] ')
-    resposta = input()
-    if resposta.lower() == 's':
-        print(clientes)
-    elif resposta.lower() == 'n':
-        return cliente()
-    else:
-        print('Digite um caracter válido!! ')
+def filtro_cliente_2(nome,clientes):
+    usuario_filtrado = [usuario for usuario in clientes if usuario["Nome"] == nome ]
+    return usuario_filtrado[0] if usuario_filtrado else None
+
 
 ##cadastro de clientes   
-def cliente():
-    cliente = {}
-    global clientes
-    global usuario
-    clientes ={}
-    while True:
-        cliente.setdefault("Nome",input('Digite seu nome: ')) 
-        data_nascimento = input("Digite a data de nascimento. Números e dê espaço entre as datas [dd/mm/yy]: ")
-        splitando_data = data_nascimento.split()
-        data = '/'.join(splitando_data)
-        cliente.setdefault("Data de Nascimento", data) 
-        cliente.setdefault("CPF",input('Digite seu CPF [separando com "." e com "-"]: '))
-        if cliente['CPF'] in clientes.keys():
-            print('CPF em uso')
-        else:
-            endereco = []
-            for i in range(5):
-                logrado = input('Digite seu endereço no formato: [logradouro, numero da casa, bairro, cidade, sigla estado]: ')
-                endereco.append(logrado)
-            cliente.setdefault("Endereço",endereco)
-            usuario = cliente['Nome']
-            conta_corrente()
-            clientes.update(cliente)
-        break
+def cliente(clientes):
+    cpf =input('Informe o seu CPF [SOMENTE NÚMEROS]')
+    usuario = filtro_cliente(cpf,clientes)
+    if usuario:
+        print('@@@ Usuário já cadastrado com este CPF @@@')
+        return
+    nome = input('Digite seu nome completo: ')
+    data_nascimento = input("Digite a data de nascimento. Números e dê espaço entre as datas [dd/mm/yy]: ")
+    splitando_data = data_nascimento.split()
+    data = '/'.join(splitando_data)
+    endereco = []
+    for i in range(5):
+        logrado = input('Digite seu endereço no formato: [logradouro, numero da casa, bairro, cidade, sigla estado]: ')
+    endereco.append(logrado)
+    numero_conta = conta_corrente()
+    clientes.append({'Nome': nome, 'Data_de_Nascimento': data, "CPF": cpf, "Endereço": endereco, "Numero_Da_Conta": numero_conta})
+        
 #gera numero de conta aleatório
 def conta_corrente():
     numero_conta = ''
-    global conta
-    agencia = '0001'
-    for i in range(9):
-        numero = '0123456789'
-        pegar_numero = random.choice(numero)
-        numero_conta += pegar_numero
-    conta = numero_conta + '/' +"0001"
+    i = 0
+    while i < 10:
+        numero = randint(0,9)
+        numero_conta += str(numero)
+        i += 1
+    return numero_conta + '/' + '0001'
 
-def menu(): 
-    global usuario
-    global conta
+def menu(user): 
     print('********************')
-    print(usuario)
+    print(f"""
+           Agência: {user["Numero_Da_Conta"]}
+           Titular: {user['Nome']}
+""")
+
     print('********************')
-    print(conta)
     print("""
         [1] Depositar
         [2] Sacar
         [3] Extrato
         [0] Sair
         [9] Cliente
+        [7] Lista Clientes
 
         Escolha a operação desejada: """, end=" ")
     opcao = int(input())
@@ -115,24 +104,30 @@ def menu():
         sys.exit('Saindo...')
     elif opcao == 9:
         cadastros()
+    elif opcao == 7:
+        mostra_cliente()
+    else:
+        print('Digite uma opção válida!!')
+        menu(user)
 
 def deposito(depositar,/):
     print('>>> Depósito <<<')
     print('\n')
     global extrato_1
     global saldo
-    continuar = 's'
-    while continuar !='n':
+    while True:
         depositar = float(input('Digite o quanto deseja depositar: '))
         if depositar > 0:
             saldo+= depositar
             print(f'Você depositou {depositar:.2f} , seu saldo atual é de {saldo:.2f}')
             extrato_1 += f'Depósito de R$ {depositar:.2f}\n'
-            continuar = input('Deseja continuar? Digite [s] caso deseje.\n')
-            if continuar.lower() == 's':
+            continuar = int(input('Deseja continuar? Digite [1] para SIM | [0] para NÃO\n'))
+            if continuar == 1:
                 continue
+            elif continuar == 0:
+                return menu(user)
             else:
-                return menu()
+                print('Digite uma  opção válida!!')
         else:
             print('Não é possível depositar valores abaixo ou iguais a ZERO')
 
@@ -152,12 +147,15 @@ def saque(*,sacar):
             print(f'Você sacou {sacar:.2f} e seu saldo atual é de {saldo:.2f}')
             extrato_1 += f'Saque de R$ {sacar:.2f}\n'
             numero_saque +=1
-            continuar = input('Deseja continuar? Digite [s] caso deseje.\n')
-            if continuar.lower() == 's':
+            continuar = int(input('Deseja continuar? Digite [1] para SIM | [0] para NÃO\n'))
+            if continuar == 1:
                 continue
-            else:
+            elif continuar == 0:
                 print('Retornando ao Menu')
-                return menu()
+                return menu(user)
+            else:
+                print('Digite uma  opção válida!!')
+
         elif sacar > 500:
             print("Digite um valor válido. Limite de saque é de R$ 500.00")
     print('Você atingiu o limite de saque diário...')
@@ -178,10 +176,14 @@ def extrato():
     if opcao == 1:
         return extrato()
     elif opcao == 0:
-        return menu()
+        return menu(user)
     else:
         print('Digite uma opção válida!! ')
 
+
+def mostra_cliente():
+    global clientes
+    print(clientes)
 
 while True: 
     login()
